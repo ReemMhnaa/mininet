@@ -16,7 +16,7 @@ class CollectTrainingStatsApp(switch.SimpleSwitch13):
 
         file0 = open("FlowMitmfile.csv","w")
         #word
-        file0.write('timestamp,datapath_id,flow_id,ip_src,tp_src,ip_dst,tp_dst,ip_proto,icmp_code,icmp_type,flow_duration_sec,flow_duration_nsec,idle_timeout,hard_timeout,flags,packet_count,byte_count,packet_count_per_second,packet_count_per_nsecond,byte_count_per_second,byte_count_per_nsecond,label\n')
+        file0.write('timestamp,datapath_id,flow_id,ip_src,tp_src,ip_dst,tp_dst,ip_proto,icmp_code,icmp_type,flow_duration_sec,flow_duration_nsec,idle_timeout,hard_timeout,flags,packet_count,byte_count,packet_count_per_second,packet_count_per_nsecond,byte_count_per_second,byte_count_per_nsecond,eth_src, eth_dst, eth_attacker, arp_spa, arp_tpa, arp_op, intercepted_packets, intercepted_bytes,label\n')
         file0.close()
 
     #Asynchronous message
@@ -73,18 +73,51 @@ class CollectTrainingStatsApp(switch.SimpleSwitch13):
             ip_proto = stat.match['ip_proto']
 
             # Add MAC addresses of source, destination, and attacker
-            eth_src = stat.match['eth_src']
-            eth_dst = stat.match['eth_dst']
-            eth_attacker = stat.match['eth_attacker']
+            if 'eth_src' in stat.match:
+                eth_src = stat.match['eth_src']
+            else:
+                eth_src = ''
+           
+            if 'eth_dst' in stat.match:
+                eth_dst = stat.match['eth_dst']
+            else:
+                eth_dst = ''
+
+            if 'eth_attacker' in stat.match:
+                eth_attacker = stat.match['eth_attacker']
+            else:
+                eth_attacker  = ''
+            
             
             # Add ARP traffic
-            arp_spa = stat.match['arp_spa']
-            arp_tpa = stat.match['arp_tpa']
-            arp_op = stat.match['arp_op']
+            if 'arp_spa' in stat.match:
+                arp_spa = stat.match['arp_spa']
+            else:
+                arp_spa = ''
+            
+            if 'arp_tpa' in stat.match:
+                arp_tpa = stat.match['arp_tpa']
+            else:
+                arp_tpa = ''
+            
+            if 'arp_op' in stat.match:
+                arp_op = stat.match['arp_op']
+            else:
+                arp_op = ''
+            
 
             # Add any intercepted packets
-            intercepted_packets = stat.match['intercepted_packets']
-            intercepted_bytes = stat.match['intercepted_bytes']
+            if 'intercepted_packets' in stat.match:
+                intercepted_packets = stat.match['intercepted_packets']
+            else:
+                intercepted_packets = ''
+            
+            if 'intercepted_bytes' in stat.match:
+                intercepted_bytes = stat.match['intercepted_bytes']
+            else:
+                intercepted_bytes = ''
+            
+           
 
             if stat.match['ip_proto'] == 1:
                 icmp_code = stat.match['icmpv4_code']
