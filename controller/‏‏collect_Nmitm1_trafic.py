@@ -13,10 +13,29 @@ class CollectTrainingStatsApp(switch.SimpleSwitch13):
         #such as the switch ID, port numbers, capabilities, and other relevant information that the controller needs to manage the switch.
         self.datapaths = {}#store information about the switches that have been connected to the controller.
         self.monitor_thread = hub.spawn(self.monitor)#function that periodically sends requests to the switches connected to the Ryu controller to get flow statistics data,
-
-        file0 = open("FlowStatsfile.csv","w")
+        self.mac_addresses = {
+          '10.0.0.1': '00:00:00:00:00:01',
+          '10.0.0.2': '00:00:00:00:00:02',
+          '10.0.0.3': '00:00:00:00:00:03',
+          '10.0.0.4': '00:00:00:00:00:04',
+          '10.0.0.5': '00:00:00:00:00:05',
+          '10.0.0.6': '00:00:00:00:00:06',
+          '10.0.0.7': '00:00:00:00:00:07',
+          '10.0.0.8': '00:00:00:00:00:08',
+          '10.0.0.9': '00:00:00:00:00:09',
+          '10.0.0.10': '00:00:00:00:00:10',
+          '10.0.0.11': '00:00:00:00:00:11',
+          '10.0.0.12': '00:00:00:00:00:12',
+          '10.0.0.13': '00:00:00:00:00:13',
+          '10.0.0.14': '00:00:00:00:00:14',
+          '10.0.0.15': '00:00:00:00:00:15',
+          '10.0.0.16': '00:00:00:00:00:16',
+          '10.0.0.17': '00:00:00:00:00:17',
+          '10.0.0.18': '00:00:00:00:00:18'
+                             }
+        file0 = open("FlowMitmfile.csv","w")
         #word
-        file0.write('timestamp,datapath_id,flow_id,ip_src,tp_src,ip_dst,tp_dst,ip_proto,icmp_code,icmp_type,flow_duration_sec,flow_duration_nsec,idle_timeout,hard_timeout,flags,packet_count,byte_count,packet_count_per_second,packet_count_per_nsecond,byte_count_per_second,byte_count_per_nsecond,label\n')
+        file0.write('timestamp,datapath_id,flow_id,ip_src,tp_src,ip_dst,tp_dst,ip_proto,icmp_code,icmp_type,flow_duration_sec,flow_duration_nsec,idle_timeout,hard_timeout,flags,packet_count,byte_count,packet_count_per_second,packet_count_per_nsecond,byte_count_per_second,byte_count_per_nsecond,mac_src,mac_dst,label\n')
         file0.close()
 
     #Asynchronous message
@@ -62,7 +81,7 @@ class CollectTrainingStatsApp(switch.SimpleSwitch13):
         tp_src = 0
         tp_dst = 0
 
-        file0 = open("FlowStatsfile.csv","a+")
+        file0 = open("FlowMitmfile.csv","a+")
         body = ev.msg.body
         for stat in sorted([flow for flow in body if (flow.priority == 1) ], key=lambda flow:
             (flow.match['eth_type'],flow.match['ipv4_src'],flow.match['ipv4_dst'],flow.match['ip_proto'])):
@@ -101,12 +120,13 @@ class CollectTrainingStatsApp(switch.SimpleSwitch13):
                 byte_count_per_nsecond = 0
                 
 
-            file0.write("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n"
+            file0.write("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n"
                 .format(timestamp, ev.msg.datapath.id, flow_id, ip_src, tp_src,ip_dst, tp_dst,
                         stat.match['ip_proto'],icmp_code,icmp_type,
                         stat.duration_sec, stat.duration_nsec,
                         stat.idle_timeout, stat.hard_timeout,
                         stat.flags, stat.packet_count,stat.byte_count,
                         packet_count_per_second,packet_count_per_nsecond,
-                        byte_count_per_second,byte_count_per_nsecond,0))
+                        byte_count_per_second,byte_count_per_nsecond,
+                        self.mac_addresses.get(ip_src, ''), self.mac_addresses.get(ip_dst, ''),0))
         file0.close()
