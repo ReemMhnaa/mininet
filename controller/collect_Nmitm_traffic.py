@@ -148,7 +148,7 @@ class CollectTrainingStatsApp(switch.SimpleSwitch13):
                 byte_count_per_nsecond = 0
 
             # Add MAC addresses, ARP traffic, and intercepted packets to the output CSV file
-            file0.write("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n"
+            file0.write("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n"
                 .format(timestamp, ev.msg.datapath.id, flow_id, ip_src, tp_src, ip_dst, tp_dst,
                         stat.match['ip_proto'],icmp_code,icmp_type,
                         stat.duration_sec, stat.duration_nsec,
